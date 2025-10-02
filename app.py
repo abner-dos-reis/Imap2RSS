@@ -213,9 +213,16 @@ class ImapToRss:
                 logger.info(f"Fetching emails from mailbox: {mailbox}")
                 # Get the encoded name for IMAP commands
                 encoded_mailbox = self.mailbox_mapping.get(mailbox, mailbox)
-                # Quote mailbox name to handle special characters
-                quoted_mailbox = f'"{encoded_mailbox}"'
-                mail.select(quoted_mailbox)
+                # Properly encode mailbox name for IMAP - use UTF-7 encoding
+                try:
+                    quoted_mailbox = f'"{encoded_mailbox}"'
+                    mail.select(quoted_mailbox)
+                except UnicodeEncodeError:
+                    # Fallback: try encoding to UTF-7 (IMAP standard)
+                    utf7_mailbox = encoded_mailbox.encode('utf-7').decode('ascii')
+                    quoted_mailbox = f'"{utf7_mailbox}"'
+                    mail.select(quoted_mailbox)
+                
                 emails = self.fetch_emails_from_mailbox(mail, mailbox)
                 all_emails[mailbox] = emails
                 logger.info(f"Fetched {len(emails)} emails from {mailbox}")
