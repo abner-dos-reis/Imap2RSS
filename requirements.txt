@@ -1,0 +1,2 @@
+# No external dependencies needed - using only Python standard library
+# This file is required for Docker build
