@@ -346,51 +346,50 @@ class ImapToRss:
         return body.strip()
     
     def clean_html_for_rss(self, html_content: str) -> str:
-        """Clean HTML content but preserve links and basic formatting"""
+        """Clean HTML but preserve links, images, and buttons while removing visual styling"""
         import re
         
-        # Remove dangerous or problematic tags but keep links and basic formatting
+        # Remove dangerous elements completely
         html_content = re.sub(r'<script[^>]*>.*?</script>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
         html_content = re.sub(r'<style[^>]*>.*?</style>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
         html_content = re.sub(r'<head[^>]*>.*?</head>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
         
-        # Remove ALL inline styles - this is the main culprit for borders
+        # Remove ALL style attributes (this removes borders, backgrounds, etc.)
         html_content = re.sub(r'\s*style\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
         
-        # Remove ALL visual attributes that cause borders/styling
+        # Remove visual attributes that cause borders/styling
         html_content = re.sub(r'\s*border\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
         html_content = re.sub(r'\s*bgcolor\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
         html_content = re.sub(r'\s*background\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*width\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*height\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*color\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*align\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*valign\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        
-        # Remove table-related styling that causes visual issues
         html_content = re.sub(r'\s*cellpadding\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
         html_content = re.sub(r'\s*cellspacing\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*frame\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*rules\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*width\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*height\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
         
-        # Remove CSS class and id attributes that might reference external styles
-        html_content = re.sub(r'\s*class\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*id\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        # Clean specific tags that commonly cause visual issues but preserve content
+        # Remove table styling but keep structure
+        html_content = re.sub(r'<table[^>]*>', '<table>', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'<td[^>]*>', '<td>', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'<tr[^>]*>', '<tr>', html_content, flags=re.IGNORECASE)
         
-        # Remove font styling attributes  
-        html_content = re.sub(r'\s*face\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'\s*size\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        # Clean div tags but preserve content
+        html_content = re.sub(r'<div[^>]*>', '<div>', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'<span[^>]*>', '<span>', html_content, flags=re.IGNORECASE)
         
-        # Clean up multiple spaces that might be left after attribute removal
-        html_content = re.sub(r'\s+', ' ', html_content)
-        html_content = re.sub(r'>\s+<', '><', html_content)
+        # Preserve important tags but clean their attributes:
+        # Links - keep href but remove all styling
+        html_content = re.sub(r'<a\s+[^>]*href\s*=\s*["\']([^"\']*)["\'][^>]*>', r'<a href="\1">', html_content, flags=re.IGNORECASE)
+        
+        # Images - keep src and alt but remove styling
+        html_content = re.sub(r'<img\s+[^>]*src\s*=\s*["\']([^"\']*)["\'][^>]*(?:alt\s*=\s*["\']([^"\']*)["\'][^>]*)?[^>]*>', r'<img src="\1" alt="\2">', html_content, flags=re.IGNORECASE)
+        
+        # Buttons - preserve but remove styling
+        html_content = re.sub(r'<button[^>]*>', '<button>', html_content, flags=re.IGNORECASE)
+        
+        # Remove empty attributes
         html_content = re.sub(r'\s+>', '>', html_content)
-        html_content = re.sub(r'<\s+', '<', html_content)
         
-        # Decode HTML entities
-        html_content = html.unescape(html_content)
-        
-        # Clean up excessive whitespace while preserving HTML structure
+        # Clean up excessive whitespace
         html_content = re.sub(r'\s+', ' ', html_content)
         html_content = re.sub(r'>\s+<', '><', html_content)
         
