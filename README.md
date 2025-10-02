@@ -101,6 +101,19 @@ docker compose logs -f imap2rss
 - **RSS Feeds**: http://localhost:8888
 - **Health Check**: http://localhost:8888/health
 
+## ⚠️ **IMPORTANT - First Time Setup**
+
+**After starting the container for the first time, you MUST configure the check interval to avoid slow RSS feed updates:**
+
+1. 🌐 **Go to http://localhost:9999** immediately after `docker compose up`
+2. ⏱️ **Set "Check Interval" to "1 minute"** (instead of default 5 minutes)
+3. 💾 **Click "Save Configuration"** to persist the settings
+4. 🔄 **Restart the container**: `docker compose restart`
+
+**If you don't do this, RSS feeds will only update every 5 minutes on first use, making it appear slow!**
+
+> 💡 **Why?** The default configuration uses a 5-minute interval. Setting it to 1 minute ensures near real-time email-to-RSS conversion for better user experience.
+
 ## 📧 Email Provider Setup
 
 ### Gmail Setup (Recommended)
