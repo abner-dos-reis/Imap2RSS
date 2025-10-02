@@ -8,26 +8,8 @@ services:
     ports:
       - "127.0.0.1:8888:8888"  # RSS server port (localhost only)
       - "127.0.0.1:9999:9999"  # Configuration GUI port (localhost only)
-    environment:
-      # Email Provider Configuration
-      - EMAIL_PROVIDER=gmail              # gmail, outlook, yahoo, zoho, custom
-      - IMAP_SERVER=imap.gmail.com        # Auto-configured based on provider
-      - IMAP_PORT=993
-      - EMAIL_USER=${EMAIL_USER}          # Set this in .env file
-      - EMAIL_PASS=${EMAIL_PASS}          # Set this in .env file (App Password for Gmail)
-      - MAILBOXES=INBOX                   # Comma-separated list of mailboxes
-      - FEED_MODE=combined                # 'combined' or 'separate'
-      
-      # RSS Configuration
-      - FEED_TITLE=My Email RSS Feed
-      - FEED_DESCRIPTION=RSS feed generated from my emails
-      - MAX_EMAILS=50
-      
-      # Server Configuration
-      - HTTP_PORT=8888
-      - CONFIG_PORT=9999
-      - CHECK_INTERVAL=60                 # Check emails every 1 minute (was 5 minutes)
-      - RUN_MODE=daemon
+    env_file:
+      - .env
     
     volumes:
       - ./data:/app/data                  # Persist RSS feed data
