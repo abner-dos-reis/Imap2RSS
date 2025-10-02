@@ -354,19 +354,41 @@ class ImapToRss:
         html_content = re.sub(r'<style[^>]*>.*?</style>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
         html_content = re.sub(r'<head[^>]*>.*?</head>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
         
-        # Remove inline styles that cause visual issues (borders, backgrounds, etc.)
-        html_content = re.sub(r'style\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        # Remove ALL inline styles - this is the main culprit for borders
+        html_content = re.sub(r'\s*style\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
         
-        # Remove problematic visual attributes
-        html_content = re.sub(r'border\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'bgcolor\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'background\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'width\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'height\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        # Remove ALL visual attributes that cause borders/styling
+        html_content = re.sub(r'\s*border\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*bgcolor\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*background\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*width\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*height\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*color\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*align\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*valign\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
         
         # Remove table-related styling that causes visual issues
-        html_content = re.sub(r'cellpadding\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'cellspacing\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*cellpadding\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*cellspacing\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*frame\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*rules\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        
+        # Remove CSS class and id attributes that might reference external styles
+        html_content = re.sub(r'\s*class\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*id\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        
+        # Remove font styling attributes  
+        html_content = re.sub(r'\s*face\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'\s*size\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        
+        # Clean up multiple spaces that might be left after attribute removal
+        html_content = re.sub(r'\s+', ' ', html_content)
+        html_content = re.sub(r'>\s+<', '><', html_content)
+        html_content = re.sub(r'\s+>', '>', html_content)
+        html_content = re.sub(r'<\s+', '<', html_content)
+        
+        # Decode HTML entities
+        html_content = html.unescape(html_content)
         
         # Clean up excessive whitespace while preserving HTML structure
         html_content = re.sub(r'\s+', ' ', html_content)
