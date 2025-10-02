@@ -26,7 +26,7 @@ services:
       # Server Configuration
       - HTTP_PORT=8888
       - CONFIG_PORT=9999
-      - CHECK_INTERVAL=300                # Check emails every 5 minutes
+      - CHECK_INTERVAL=60                 # Check emails every 1 minute (was 5 minutes)
       - RUN_MODE=daemon
     
     volumes:

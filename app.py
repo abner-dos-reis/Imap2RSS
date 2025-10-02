@@ -156,11 +156,14 @@ class ImapToRss:
             logger.warning(f"Unknown provider '{self.email_provider}', using manual configuration")
     
     def connect_imap(self) -> imaplib.IMAP4_SSL:
-        """Connect to IMAP server"""
+        """Connect to IMAP server with optimized settings"""
         try:
             logger.info(f"Connecting to {self.imap_server}:{self.imap_port}")
-            mail = imaplib.IMAP4_SSL(self.imap_server, self.imap_port)
+            # Create connection with shorter timeout for faster response
+            mail = imaplib.IMAP4_SSL(self.imap_server, self.imap_port, timeout=10)
             mail.login(self.email_user, self.email_pass)
+            # Set shorter timeout for operations
+            mail.sock.settimeout(30)
             logger.info("Successfully connected to IMAP server")
             return mail
         except Exception as e:
@@ -343,6 +346,20 @@ class ImapToRss:
         html_content = re.sub(r'<script[^>]*>.*?</script>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
         html_content = re.sub(r'<style[^>]*>.*?</style>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
         html_content = re.sub(r'<head[^>]*>.*?</head>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
+        
+        # Remove inline styles that cause visual issues (borders, backgrounds, etc.)
+        html_content = re.sub(r'style\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        
+        # Remove problematic visual attributes
+        html_content = re.sub(r'border\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'bgcolor\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'background\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'width\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'height\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        
+        # Remove table-related styling that causes visual issues
+        html_content = re.sub(r'cellpadding\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
+        html_content = re.sub(r'cellspacing\s*=\s*["\'][^"\']*["\']', '', html_content, flags=re.IGNORECASE)
         
         # Clean up excessive whitespace while preserving HTML structure
         html_content = re.sub(r'\s+', ' ', html_content)
