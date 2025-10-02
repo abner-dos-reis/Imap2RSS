@@ -2,7 +2,7 @@
 
 A Docker application that converts IMAP emails into RSS feeds for integration with RSS readers like FreshRSS.
 
-![IMAP2RSS Screenshot](screenshots/Screenshot1.png)
+![IMAP2RSS Screenshot](screenshots/Screenshot2.png)
 
 ## 🌟 Features
 
@@ -21,9 +21,15 @@ A Docker application that converts IMAP emails into RSS feeds for integration wi
 
 ## 📸 Screenshots
 
-| Web Configuration GUI | RSS Feed List | Individual RSS Feed |
+### Main Configuration Interface
+| Configuration Screen 1 | Configuration Screen 2 | Configuration Screen 3 |
 |----------------------|---------------|-------------------|
-| ![GUI](screenshots/Screenshot1.png) | ![Feed List](screenshots/Screenshot2.png) | ![RSS Feed](screenshots/Screenshot3.png) |
+| ![Main GUI](screenshots/Screenshot1.png) | ![Main GUI](screenshots/Screenshot2.png) | ![Main GUI](screenshots/Screenshot3.png) |
+
+### RSS Feeds Page
+Shows all available RSS feeds generated from the detected folders:
+
+![RSS Feeds List](screenshots/Screenshot4.png)
 
 ## 🚀 Quick Start
 
