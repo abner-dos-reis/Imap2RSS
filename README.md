@@ -21,15 +21,19 @@ A Docker application that converts IMAP emails into RSS feeds for integration wi
 
 ## 📸 Screenshots
 
-### Main Configuration Interface
-| Configuration Screen 1 | Configuration Screen 2 | Configuration Screen 3 |
-|----------------------|---------------|-------------------|
-| ![Main GUI](screenshots/Screenshot1.png) | ![Main GUI](screenshots/Screenshot2.png) | ![Main GUI](screenshots/Screenshot3.png) |
+### Configuration Interface
+The web interface provides an easy way to configure your email settings and manage RSS feeds:
 
-### RSS Feeds Page
-Shows all available RSS feeds generated from the detected folders:
+| Provider Selection | Email Settings | Mailbox Detection |
+|-------------------|----------------|-------------------|
+| ![Provider Selection](screenshots/Screenshot1.png) | ![Email Settings](screenshots/Screenshot2.png) | ![Mailbox Detection](screenshots/Screenshot3.png) |
 
-![RSS Feeds List](screenshots/Screenshot4.png)
+### RSS Feeds Dashboard
+View all your available RSS feeds and access them directly:
+
+| RSS Feed List | Status Dashboard |
+|---------------|-----------------|
+| ![RSS Feed List](screenshots/Screenshot4.png) | ![Status Dashboard](screenshots/Screenshot5.png) |
 
 ## 🚀 Quick Start
 
