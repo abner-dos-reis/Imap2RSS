@@ -301,8 +301,9 @@ class ImapToRss:
             return str(header)
     
     def extract_body(self, email_message) -> str:
-        """Extract email body text"""
+        """Extract email body text with preserved HTML when available"""
         body = ""
+        html_body = ""
         
         if email_message.is_multipart():
             for part in email_message.walk():
@@ -312,26 +313,48 @@ class ImapToRss:
                 if content_type == "text/plain" and "attachment" not in content_disposition:
                     try:
                         body = part.get_payload(decode=True).decode('utf-8', errors='ignore')
-                        break
                     except:
                         continue
-                elif content_type == "text/html" and not body and "attachment" not in content_disposition:
+                elif content_type == "text/html" and "attachment" not in content_disposition:
                     try:
                         html_body = part.get_payload(decode=True).decode('utf-8', errors='ignore')
-                        # Simple HTML to text conversion
-                        body = self.html_to_text(html_body)
                     except:
                         continue
         else:
             try:
-                body = email_message.get_payload(decode=True).decode('utf-8', errors='ignore')
+                content = email_message.get_payload(decode=True).decode('utf-8', errors='ignore')
+                if email_message.get_content_type() == "text/html":
+                    html_body = content
+                else:
+                    body = content
             except:
                 body = str(email_message.get_payload())
         
+        # Prefer HTML version for better link preservation, fallback to plain text
+        if html_body:
+            return self.clean_html_for_rss(html_body)
         return body.strip()
     
+    def clean_html_for_rss(self, html_content: str) -> str:
+        """Clean HTML content but preserve links and basic formatting"""
+        import re
+        
+        # Remove dangerous or problematic tags but keep links and basic formatting
+        html_content = re.sub(r'<script[^>]*>.*?</script>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
+        html_content = re.sub(r'<style[^>]*>.*?</style>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
+        html_content = re.sub(r'<head[^>]*>.*?</head>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
+        
+        # Clean up excessive whitespace while preserving HTML structure
+        html_content = re.sub(r'\s+', ' ', html_content)
+        html_content = re.sub(r'>\s+<', '><', html_content)
+        
+        # Decode HTML entities
+        html_content = html.unescape(html_content)
+        
+        return html_content.strip()
+    
     def html_to_text(self, html_content: str) -> str:
-        """Simple HTML to text conversion"""
+        """Simple HTML to text conversion - kept for compatibility"""
         # Remove HTML tags
         text = re.sub(r'<[^>]+>', '', html_content)
         # Decode HTML entities
@@ -378,12 +401,20 @@ class ImapToRss:
             title = f"[{email_data['mailbox']}] [{email_data['sender']}] {email_data['subject']}"
             ET.SubElement(item, "title").text = title
             
-            # Include mailbox in description
-            description = f"<p><strong>Folder:</strong> {email_data['mailbox']}</p><p><strong>From:</strong> {email_data['sender']}</p><hr/>{email_data['body'][:1000]}"
-            if len(email_data['body']) > 1000:
-                description += "..."
+            # Include mailbox in description with preserved HTML
+            description = f"<p><strong>Folder:</strong> {email_data['mailbox']}</p><p><strong>From:</strong> {email_data['sender']}</p><hr/>"
             
-            ET.SubElement(item, "description").text = description
+            # Preserve HTML content with links
+            body_content = email_data['body']
+            if len(body_content) > 3000:  # Increased limit for HTML content
+                body_content = body_content[:3000] + "..."
+            
+            description += body_content
+            
+            # Use CDATA to preserve HTML content
+            desc_elem = ET.SubElement(item, "description")
+            desc_elem.text = f"<![CDATA[{description}]]>"
+            
             ET.SubElement(item, "guid").text = email_data['id']
             ET.SubElement(item, "pubDate").text = email_data['date'].strftime("%a, %d %b %Y %H:%M:%S +0000")
             ET.SubElement(item, "author").text = email_data['sender']
@@ -431,11 +462,15 @@ class ImapToRss:
                 title = f"[{email_data['sender']}] {email_data['subject']}"
                 ET.SubElement(item, "title").text = title
                 
-                description = email_data['body'][:1000]
-                if len(email_data['body']) > 1000:
-                    description += "..."
+                # Preserve HTML content with links
+                body_content = email_data['body']
+                if len(body_content) > 3000:  # Increased limit for HTML content
+                    body_content = body_content[:3000] + "..."
                 
-                ET.SubElement(item, "description").text = description
+                # Use CDATA to preserve HTML content
+                desc_elem = ET.SubElement(item, "description")
+                desc_elem.text = f"<![CDATA[{body_content}]]>"
+                
                 ET.SubElement(item, "guid").text = email_data['id']
                 ET.SubElement(item, "pubDate").text = email_data['date'].strftime("%a, %d %b %Y %H:%M:%S +0000")
                 ET.SubElement(item, "author").text = email_data['sender']
