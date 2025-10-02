@@ -103,16 +103,20 @@ docker compose logs -f imap2rss
 
 ## ⚠️ **IMPORTANT - First Time Setup**
 
-**After starting the container for the first time, you MUST configure the check interval to avoid slow RSS feed updates:**
+**After starting the container for the first time, follow this EXACT sequence to avoid slow RSS feed updates:**
 
-1. 🔄 **First, restart the container**: `docker compose restart`
-2. 🌐 **Then go to http://localhost:9999** after the restart
-3. ⏱️ **Set "Check Interval" to "1 minute"** (instead of default 5 minutes)
-4. 💾 **Click "Save Configuration"** to persist the settings
+1. � **Start container**: `docker compose up -d`
+2. 🌐 **Go to http://localhost:9999** 
+3. 📧 **Configure your email settings and detect mailboxes** (pull folders)
+4. 💾 **Save Configuration** 
+5. 🔄 **Restart container**: `docker compose restart`
+6. 🌐 **Go back to http://localhost:9999** 
+7. ⏱️ **WITHOUT pulling folders again, just set "Check Interval" to "1 minute"**
+8. 💾 **Save Configuration** again
 
-**Important:** You must restart FIRST, then configure the 1-minute interval. If you configure before restart, it will revert to slow performance again!
+**Important:** Don't detect mailboxes again in step 7! Just change the interval to 1 minute and save.
 
-> 💡 **Why?** The default configuration uses a 5-minute interval. Setting it to 1 minute AFTER restart ensures near real-time email-to-RSS conversion for better user experience.
+> 💡 **Why?** The app needs to first detect your mailboxes, then after restart you optimize the check interval for better performance.
 
 ## 📧 Email Provider Setup
 
