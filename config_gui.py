@@ -260,7 +260,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
         
         <div class="content">
             <div class="status-info">
-                <h4>📍 Como usar:</h4>
+                <h4>📍 How to use:</h4>
                 <p><strong>1.</strong> Select your email provider</p>
                 <p><strong>2.</strong> Configure email and password</p>
                 <p><strong>3.</strong> Choose folders to monitor</p>
@@ -296,7 +296,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
                     <div class="form-group">
                         <label for="email_user">Email <span class="required">*</span></label>
                         <input type="email" id="email_user" name="email_user" value="{email_user}" required>
-                        <small>Seu email completo (ex: usuario@gmail.com)</small>
+                        <small>Your complete email (ex: user@gmail.com)</small>
                     </div>
                     
                     <div class="form-group">
@@ -307,7 +307,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
                 </div>
                 
                 <div class="section">
-                    <h3>⚙️ Configurações IMAP (Automático)</h3>
+                    <h3>⚙️ IMAP Settings (Automatic)</h3>
                     
                     <div class="grid">
                         <div class="form-group">
@@ -346,7 +346,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
                 </div>
                 
                 <div class="section">
-                    <h3>📰 Configurações do Feed RSS</h3>
+                    <h3>📰 RSS Feed Settings</h3>
                     
                     <div class="form-group">
                         <label for="feed_title">Feed Title</label>
@@ -368,7 +368,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
                         <div class="form-group">
                             <label for="check_interval">Check Interval (minutes)</label>
                             <input type="number" id="check_interval" name="check_interval" value="{check_interval}" min="1" max="1440">
-                            <small>Frequência para buscar novos emails</small>
+                            <small>Frequency to check for new emails</small>
                         </div>
                     </div>
                 </div>
@@ -376,7 +376,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
                 <div class="button-group">
                     <button type="submit" class="btn">💾 Save Configuration</button>
                     <button type="button" class="btn btn-secondary" onclick="detectMailboxes()">🔍 Detect Folders</button>
-                    <a href="/status" class="btn btn-secondary">📊 Ver Status</a>
+                    <a href="/status" class="btn btn-secondary">📊 View Status</a>
                     <a href="https://myaccount.google.com/security" target="_blank" class="btn btn-secondary" style="background: linear-gradient(45deg, #db4437, #c23321);">🔐 Config Gmail</a>
                 </div>
             </form>
@@ -409,7 +409,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
                     }} else if (provider === 'zoho') {{
                         document.getElementById('password_help').textContent = 'WARNING: Free Zoho does not support IMAP!';
                     }} else {{
-                        document.getElementById('password_help').textContent = 'Configure as credenciais do seu provedor';
+                        document.getElementById('password_help').textContent = 'Configure your provider credentials';
                     }}
                 }}
                 
@@ -465,7 +465,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
             .catch(error => {{
                 button.textContent = originalText;
                 button.disabled = false;
-                alert('❌ Erro: ' + error);
+                alert('❌ Error: ' + error);
             }});
         }}
         
@@ -490,7 +490,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
                 }}
             }})
             .catch(error => {{
-                alert('❌ Erro: ' + error);
+                alert('❌ Error: ' + error);
             }});
         }});
     </script>
@@ -509,7 +509,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
             mailboxes=config.get('MAILBOXES', 'INBOX'),
             combined_selected='selected' if config.get('FEED_MODE', 'combined') == 'combined' else '',
             separate_selected='selected' if config.get('FEED_MODE') == 'separate' else '',
-            feed_title=config.get('FEED_TITLE', 'Meus Emails RSS'),
+            feed_title=config.get('FEED_TITLE', 'My RSS Emails'),
             feed_description=config.get('FEED_DESCRIPTION', 'Feed RSS gerado dos meus emails'),
             max_emails=config.get('MAX_EMAILS', '50'),
             check_interval=str(int(config.get('CHECK_INTERVAL', '300')) // 60)
@@ -642,7 +642,7 @@ class ConfigHandler(BaseHTTPRequestHandler):
             env_content.append(f"IMAP_PORT={form_data.get('imap_port', ['993'])[0]}")
             env_content.append(f"MAILBOXES={form_data.get('mailboxes', ['INBOX'])[0]}")
             env_content.append(f"FEED_MODE={form_data.get('feed_mode', ['combined'])[0]}")
-            env_content.append(f"FEED_TITLE={form_data.get('feed_title', ['Meus Emails RSS'])[0]}")
+            env_content.append(f"FEED_TITLE={form_data.get('feed_title', ['My RSS Emails'])[0]}")
             env_content.append(f"FEED_DESCRIPTION={form_data.get('feed_description', ['Feed RSS gerado dos meus emails'])[0]}")
             env_content.append(f"MAX_EMAILS={form_data.get('max_emails', ['50'])[0]}")
             
@@ -691,18 +691,18 @@ class ConfigHandler(BaseHTTPRequestHandler):
 </head>
 <body>
     <div class="container">
-        <h1>📊 Status do IMAP2RSS</h1>
-        <p><strong>Provedor:</strong> {config.get('EMAIL_PROVIDER', 'gmail').title()}</p>
-        <p><strong>Email:</strong> {config.get('EMAIL_USER', 'Não configurado')}</p>
+        <h1>📊 IMAP2RSS Status</h1>
+        <p><strong>Provider:</strong> {config.get('EMAIL_PROVIDER', 'gmail').title()}</p>
+        <p><strong>Email:</strong> {config.get('EMAIL_USER', 'Not configured')}</p>
         <p><strong>Server:</strong> {config.get('IMAP_SERVER', 'imap.gmail.com')}</p>
         <p><strong>Folders:</strong> {config.get('MAILBOXES', 'INBOX')}</p>
         
-        <h2>Links RSS:</h2>
-        <p><a href="http://localhost:8888/feed.xml" target="_blank">Feed Principal</a></p>
-        <p><a href="http://localhost:8888/" target="_blank">Todos os Feeds</a></p>
+        <h2>RSS Links:</h2>
+        <p><a href="http://localhost:8888/feed.xml" target="_blank">Main Feed</a></p>
+        <p><a href="http://localhost:8888/" target="_blank">All Feeds</a></p>
         
-        <a href="/" class="btn">⚙️ Configurar</a>
-        <a href="http://localhost:8888/" class="btn" target="_blank">📰 Ver Feeds</a>
+        <a href="/" class="btn">⚙️ Settings</a>
+        <a href="http://localhost:8888/" class="btn" target="_blank">📰 View Feeds</a>
     </div>
 </body>
 </html>"""

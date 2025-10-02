@@ -100,7 +100,7 @@ class RSSHandler(SimpleHTTPRequestHandler):
             html = f"""<!DOCTYPE html>
 <html>
 <head>
-    <title>IMAP2RSS - Feeds Disponíveis</title>
+    <title>IMAP2RSS - Available Feeds</title>
     <style>
         body {{ font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }}
         .container {{ max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }}
@@ -114,15 +114,15 @@ class RSSHandler(SimpleHTTPRequestHandler):
 </head>
 <body>
     <div class="container">
-        <h1>📰 Feeds RSS Disponíveis</h1>
+        <h1>📰 Available RSS Feeds</h1>
         
         <div class="info">
-            <strong>Modo:</strong> {feeds_data.get('feed_mode', 'combined')}<br>
+            <strong>Mode:</strong> {feeds_data.get('feed_mode', 'combined')}<br>
             <strong>Monitored folders:</strong> {', '.join([decode_imap_utf7(mb) for mb in feeds_data.get('mailboxes', ['INBOX'])])}<br>
-            <strong>Última atualização:</strong> {feeds_data.get('generated_at', 'Desconhecido')}
+            <strong>Last update:</strong> {feeds_data.get('generated_at', 'Unknown')}
         </div>
         
-        <h2>Feeds RSS:</h2>
+        <h2>RSS Feeds:</h2>
         <ul class="feed-list">"""
             
             for feed in feeds_data.get('feeds', []):
@@ -136,7 +136,7 @@ class RSSHandler(SimpleHTTPRequestHandler):
             <li class="feed-item">
                 <a href="/{feed}.xml">{feed}.xml</a>
                 <small>{description}</small>
-                <small><strong>URL para FreshRSS:</strong> <code>{feed_url}</code></small>
+                <small><strong>FreshRSS URL:</strong> <code>{feed_url}</code></small>
             </li>"""
             
             html += """
@@ -146,11 +146,11 @@ class RSSHandler(SimpleHTTPRequestHandler):
         <ul class="feed-list">
             <li class="feed-item">
                 <a href="/feeds.json">feeds.json</a>
-                <small>Lista de feeds em formato JSON</small>
+                <small>List of feeds in JSON format</small>
             </li>
             <li class="feed-item">
                 <a href="/health">health</a>
-                <small>Status de saúde do serviço</small>
+                <small>Service health status</small>
             </li>
         </ul>
     </div>
